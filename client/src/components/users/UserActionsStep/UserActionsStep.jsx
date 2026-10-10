@@ -105,19 +105,13 @@ const UserActionsStep = React.memo(({ onClose }) => {
             })}
           </Menu.Item>
           <Menu.Item
-            href={
-              withAdministration
-                ? 'https://planka.app/trial?ref=app-menu'
-                : 'https://planka.app/pro?ref=app-menu'
-            }
+            href="https://hub.zerocopia.com.br"
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.proMenuItem}
+            className={styles.menuItem}
           >
-            <Icon name="gem" className={styles.proMenuItemIcon} />
-            {withAdministration
-              ? t('common.upgradeTeamToPro', { context: 'title' })
-              : t('common.discoverPlankaPro', { context: 'title' })}
+            <Icon name="bullhorn" className={styles.menuItemIcon} />
+            Ops & Notificações Hub
           </Menu.Item>
           <hr className={styles.divider} />
           <Menu.Item
