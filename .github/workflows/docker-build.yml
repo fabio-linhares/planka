@@ -1,18 +1,20 @@
-name: Build and Push Docker Nightly Image
+name: Build and Push Docker Image
 
 on:
   push:
-    paths-ignore:
-      - '.github/**'
-      - 'charts/**'
-      - 'docker-*.yml'
-      - '*.md'
     branches: [master]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
-  build-and-push-docker-nightly-image:
-    runs-on: self-hosted
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -25,12 +27,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
-
-      - name: Update version with build number
-        run: |
-          npm version "$(node -p "require('./package.json').version")-nightly.$(git rev-list --count HEAD)" --no-git-tag-version
-          npx --yes genversion --source . --template server/version-template.ejs server/version.js
-          npx --yes genversion --source . --template client/version-template.ejs client/src/version.js
+          cache-dependency-path: 'client/package-lock.json'
 
       - name: Install client dependencies
         run: npm install --omit=dev
@@ -52,38 +49,33 @@ jobs:
             || { echo "::error::Failed to patch Dockerfile for the prebuilt client"; exit 1; }
           cat Dockerfile
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate Docker image tags
-        id: metadata
+      - name: Extract Docker metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            name=ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=nightly
-          labels: |
-            org.opencontainers.image.licenses=Fair Use License
-            org.opencontainers.image.url=https://planka.app
+            type=raw,value=latest
+            type=raw,value=master
+            type=sha,format=short
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

@@ -17,7 +17,7 @@ export default {
       or: 'Ou',
       pageNotFound_title: 'Página não encontrada',
       password: 'Senha',
-      poweredByPlanka: 'Desenvolvido por <1>PLANKA</1>',
+      poweredByPlanka: '4Solver • Plataforma de Gestão BioSolver',
       serverConnectionFailed: 'Falha na conexão com o servidor',
       totpSessionExpired: 'Sessão TOTP expirada. Faça login novamente.',
       trustThisBrowser: 'Confiar neste navegador por 30 dias',

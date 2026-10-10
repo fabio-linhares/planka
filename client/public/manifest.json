@@ -1,5 +1,6 @@
 {
-  "name": "PLANKA",
+  "name": "4Solver Planka",
+  "short_name": "4Solver",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,6 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#22252a",
-  "background_color": "#ffffff"
+  "theme_color": "#080f09",
+  "background_color": "#080f09"
 }
